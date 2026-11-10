@@ -112,3 +112,44 @@ class Ball(GameObject):
         return points, destroyed
 
 
+class Paddle(GameObject):
+    DEFAULT_WIDTH = 80
+
+    def __init__(self, canvas, x, y):
+        self.width = self.DEFAULT_WIDTH
+        self.height = 10
+        self.ball = None
+        item = canvas.create_rectangle(x - self.width / 2,
+                                       y - self.height / 2,
+                                       x + self.width / 2,
+                                       y + self.height / 2,
+                                       fill='yellow')
+        super().__init__(canvas, item)
+
+    def set_ball(self, ball):
+        self.ball = ball
+
+    def reset(self, x, y):
+        self.canvas.coords(self.item,
+                           x - self.width / 2, y - self.height / 2,
+                           x + self.width / 2, y + self.height / 2)
+
+    def set_width(self, width):
+        # Ubah lebar paddle dengan titik tengah tetap
+        coords = self.get_position()
+        center = (coords[0] + coords[2]) / 2
+        canvas_width = float(self.canvas.cget('width'))
+        self.width = width
+        left = max(0, min(canvas_width - width, center - width / 2))
+        self.canvas.coords(self.item, left, coords[1],
+                           left + width, coords[3])
+
+    def move(self, offset):
+        coords = self.get_position()
+        width = self.canvas.winfo_width()
+        if coords[0] + offset >= 0 and coords[2] + offset <= width:
+            super().move(offset, 0)
+            if self.ball is not None:
+                self.ball.move(offset, 0)
+
+
