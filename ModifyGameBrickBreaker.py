@@ -186,3 +186,32 @@ POWERUP_TYPES = {
 }
 
 
+class PowerUp(GameObject):
+    WIDTH = 36
+    HEIGHT = 16
+    FALL_SPEED = 5
+
+    def __init__(self, canvas, x, y, kind):
+        self.kind = kind
+        info = POWERUP_TYPES[kind]
+        item = canvas.create_rectangle(x - self.WIDTH / 2,
+                                       y - self.HEIGHT / 2,
+                                       x + self.WIDTH / 2,
+                                       y + self.HEIGHT / 2,
+                                       fill=info['color'], outline='black')
+        self.label = canvas.create_text(x, y, text=info['label'],
+                                        font=('Arial', 9, 'bold'))
+        super().__init__(canvas, item)
+
+    def update(self):
+        self.move(0, self.FALL_SPEED)
+
+    def move(self, x, y):
+        super().move(x, y)
+        self.canvas.move(self.label, x, y)
+
+    def delete(self):
+        super().delete()
+        self.canvas.delete(self.label)
+
+
